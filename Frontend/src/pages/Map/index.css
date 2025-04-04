@@ -1,0 +1,77 @@
+.background {
+    pointer-events: all;
+    background: #fff;
+    background-color: white !important; 
+    margin: 0; 
+  }
+  
+  .labels {
+    color: black;
+  }
+  
+  
+  @media (max-width: 1024px) {
+    .filters {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 1.8em;
+      text-align: center;
+      justify-content: center;
+      margin: 0 auto;
+      max-width: 90%;
+    }
+  
+    .filters {
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+  
+    select {
+      width: 90%;
+      padding: 8px;
+      font-size: 1em;
+    }
+  
+    .map-wrapper {
+      height: 60vh;
+      width: 90vw;
+      margin: 0 auto;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 1.5em;
+      padding-bottom: 20px;
+      text-align: center;
+      justify-content: center;
+      margin: 0 auto;
+      max-width: 95%;
+    }
+  
+    .filters {
+      width: 100%;
+      gap: 5px;
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    select {
+      font-size: 0.9em;
+      width: 95%;
+    }
+  
+    .map-wrapper {
+      height: 70vh;
+      width: 100vw;
+      margin: 0 auto;
+    }
+  }
+  
+  
