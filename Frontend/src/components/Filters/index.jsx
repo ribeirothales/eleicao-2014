@@ -1,4 +1,5 @@
 import React from "react";
+import "./Filters.css";
 
 const Filters = ({
   selectedParty,
@@ -8,48 +9,80 @@ const Filters = ({
   handleStateSelection,
   states,
   brazilGeoJson,
-  calculateStateCenter,
+  calculateStateCenter
 }) => {
   return (
-    <div className="filters" style={{ display: "flex", justifyContent: "center", gap: "20px", marginBottom: "30px" }}>
-      <label className="labels">
-        Partido:
-        <select value={selectedParty} onChange={(e) => handlePartySelection(e.target.value)}>
-          <option value="">All</option>
-          {parties.map((p) => (
-            <option key={p} value={p}>
-              {p}
+    <div className="filters-container">
+      <div className="filter-group">
+        <label htmlFor="partido-select">Partido:</label>
+        <select
+          id="partido-select"
+          value={selectedParty}
+          onChange={(e) => handlePartySelection(e.target.value)}
+        >
+          <option value="">Todos</option>
+          {parties.map((party) => (
+            <option key={party} value={party}>
+              {party}
             </option>
           ))}
         </select>
-      </label>
-      <label className="labels">
-        Estado:
+      </div>
+
+      <div className="filter-group">
+        <label htmlFor="estado-select">Estado:</label>
         <select
+          id="estado-select"
           value={selectedState}
           onChange={(e) => {
             const sigla = e.target.value;
             if (sigla === "") {
-              handleStateSelection("", [-14.235, -51.9253]);
+              handleStateSelection("", null);
             } else {
-              const estado = brazilGeoJson.features.find((f) => f.properties.sigla === sigla);
+              const estado = brazilGeoJson.features.find(
+                (f) => f.properties.sigla === sigla
+              );
               if (estado) {
-                const centerCoords = calculateStateCenter(estado);
-                handleStateSelection(sigla, centerCoords);
-              } else {
-                handleStateSelection("", [-14.235, -51.9253]);
+                const center = calculateStateCenter(estado);
+                handleStateSelection(sigla, { lat: center[0], lng: center[1] });
               }
             }
           }}
         >
-          <option value="">All</option>
-          {states.map((s) => (
-            <option key={s} value={s}>
-              {s}
+          <option value="">Todos</option>
+          {states.map((state) => (
+            <option key={state} value={state}>
+              {state}
             </option>
           ))}
         </select>
-      </label>
+      </div>
+      
+      <div className="filter-badge">
+        {selectedParty && (
+          <span className="badge party-badge">
+            Partido: {selectedParty}
+            <button 
+              onClick={() => handlePartySelection("")}
+              className="badge-clear"
+            >
+              ×
+            </button>
+          </span>
+        )}
+        
+        {selectedState && (
+          <span className="badge state-badge">
+            Estado: {selectedState}
+            <button 
+              onClick={() => handleStateSelection("", null)}
+              className="badge-clear"
+            >
+              ×
+            </button>
+          </span>
+        )}
+      </div>
     </div>
   );
 };
