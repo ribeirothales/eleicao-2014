@@ -16,7 +16,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component
+// @Component
 public class DataLoader implements CommandLineRunner {
 
     @Autowired
