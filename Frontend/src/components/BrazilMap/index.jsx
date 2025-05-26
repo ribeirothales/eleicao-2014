@@ -3,12 +3,22 @@ import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { fetchStatesData, fetchMunicipalitiesByState } from "../../data/api";
 import Filters from "../Filters";
+import './MapLoading.css';
+
+
 const parties = ["PSB", "PSDB", "PT", "PSOL", "PSC", "PV"];
 const states = [
   "AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA",
   "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN", 
   "RS", "RO", "RR", "SC", "SE", "SP", "TO"
 ];
+const LoadingOverlay = () => (
+  <div className="loading-overlay">
+    <div className="loading-spinner"></div>
+    <p className="loading-text">Carregando mapa...</p>
+  </div>
+);
+
 
 const MapBrazil = () => {
   const mapRef = useRef(null);
@@ -17,7 +27,7 @@ const MapBrazil = () => {
   const [selectedMunicipios, setSelectedMunicipios] = useState([]);
   const [selectedPartyVotesByState, setSelectedPartyVotesByState] = useState([]);
   const [brazilGeoJson, setBrazilGeoJson] = useState({ type: "FeatureCollection", features: [] });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [loadingMunicipalities, setLoadingMunicipalities] = useState(false);
 
   useEffect(() => {
