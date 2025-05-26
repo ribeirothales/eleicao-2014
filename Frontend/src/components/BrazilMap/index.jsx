@@ -1,10 +1,9 @@
-import { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { fetchStatesData, fetchMunicipalitiesByState } from "../../data/api";
 import Filters from "../Filters";
-import './MapLoading.css';
-
+import "./MapLoading.css";
 
 const parties = ["PSB", "PSDB", "PT", "PSOL", "PSC", "PV"];
 const states = [
@@ -12,13 +11,6 @@ const states = [
   "MG", "MS", "MT", "PA", "PB", "PE", "PI", "PR", "RJ", "RN", 
   "RS", "RO", "RR", "SC", "SE", "SP", "TO"
 ];
-const LoadingOverlay = () => (
-  <div className="loading-overlay">
-    <div className="loading-spinner"></div>
-    <p className="loading-text">Carregando mapa...</p>
-  </div>
-);
-
 
 const MapBrazil = () => {
   const mapRef = useRef(null);
@@ -29,6 +21,7 @@ const MapBrazil = () => {
   const [brazilGeoJson, setBrazilGeoJson] = useState({ type: "FeatureCollection", features: [] });
   const [loading, setLoading] = useState(true);
   const [loadingMunicipalities, setLoadingMunicipalities] = useState(false);
+  const [mapInitialized, setMapInitialized] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -36,6 +29,7 @@ const MapBrazil = () => {
         setLoading(true);
         const statesData = await fetchStatesData();
         setBrazilGeoJson(statesData);
+        setMapInitialized(true);
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
       } finally {
@@ -225,16 +219,6 @@ const MapBrazil = () => {
     return [-14.235, -51.9253];
   };
 
-  if (loading) {
-    return <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: '50vh',
-      fontSize: '1.2rem'
-    }}></div>;
-  }
-
   return (
     <div>
       <Filters
@@ -247,66 +231,81 @@ const MapBrazil = () => {
         brazilGeoJson={brazilGeoJson}
         calculateStateCenter={calculateStateCenter}
       />
-      <div style={{ height: "calc(80vh - 100px)", width: "100%", position: 'relative' }}>
+      
+      <div className="map-container" style={{ height: "calc(80vh - 100px)", width: "100%", position: 'relative' }}>
+        {/* Overlay de carregamento - sempre visível quando loading=true */}
+        {loading && (
+          <div className="loading-overlay">
+            <div className="loading-spinner"></div>
+            <p className="loading-text">Carregando mapa...</p>
+          </div>
+        )}
+        
+        {/* Indicador de carregamento de municípios */}
         {loadingMunicipalities && (
-          <div style={{
-            position: 'absolute',
-            top: '10px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 1000,
-            backgroundColor: 'rgba(255,255,255,0.8)',
-            padding: '5px 10px',
-            borderRadius: '5px'
-          }}>
+          <div className="loading-indicator">
             Carregando municípios...
           </div>
         )}
-        <MapContainer 
-          ref={mapRef} 
-          center={[-14.235, -51.9253]} 
-          zoom={4} 
-          style={{ height: "100%", width: "100%", background: "#ddd" }}
-          maxBounds={[
-            [-33.75, -73.99],
-            [5.27, -34.79],
-          ]}
-          maxBoundsViscosity={1.0}
-        >
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          
-          {!selectedParty && (
-            <GeoJSON 
-              key={`base-${selectedParty}-${selectedState}`}
-              data={brazilGeoJson}
-              style={() => ({
-                fillColor: "#007bff",
-                fillOpacity: 0.5,
-                color: "white",
-                weight: 1
-              })}
-              onEachFeature={onEachFeature}
-            />
-          )}
+        
+        {/* Renderiza o mapa apenas quando os dados iniciais estiverem carregados */}
+        {mapInitialized && (
+          <MapContainer 
+            ref={mapRef} 
+            center={[-14.235, -51.9253]} 
+            zoom={4} 
+            style={{ height: "100%", width: "100%", background: "#1a365d" }}
+            maxBounds={[
+              [-33.75, -73.99],
+              [5.27, -34.79],
+            ]}
+            maxBoundsViscosity={1.0}
+          >
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            
+            {!selectedParty && (
+              <GeoJSON 
+                key={`base-${selectedParty}-${selectedState}`}
+                data={brazilGeoJson}
+                style={() => ({
+                  fillColor: "#007bff",
+                  fillOpacity: 0.5,
+                  color: "white",
+                  weight: 1
+                })}
+                onEachFeature={onEachFeature}
+              />
+            )}
 
-          {selectedState && selectedMunicipios.length > 0 && (
-            <GeoJSON 
-              key={`municipios-${selectedState}-${selectedParty}`}
-              data={{ type: "FeatureCollection", features: selectedMunicipios }}
-              style={() => ({ fillColor: "#ff7f00", fillOpacity: 0.5, color: "white", weight: 1 })} 
-              onEachFeature={onEachMunicipio}
-            />
-          )}
+            {selectedState && selectedMunicipios.length > 0 && (
+              <GeoJSON 
+                key={`municipios-${selectedState}-${selectedParty}`}
+                data={{ type: "FeatureCollection", features: selectedMunicipios }}
+                style={() => ({ fillColor: "#ff7f00", fillOpacity: 0.5, color: "white", weight: 1 })} 
+                onEachFeature={onEachMunicipio}
+              />
+            )}
 
-          {selectedParty && selectedPartyVotesByState.length > 0 && (
-            <GeoJSON 
-              key={`party-${selectedParty}`}
-              data={{ type: "FeatureCollection", features: selectedPartyVotesByState }}
-              style={stateStyle} 
-              onEachFeature={onEachFeature}
-            />
-          )}
-        </MapContainer>
+            {selectedParty && selectedPartyVotesByState.length > 0 && (
+              <GeoJSON 
+                key={`party-${selectedParty}`}
+                data={{ type: "FeatureCollection", features: selectedPartyVotesByState }}
+                style={stateStyle} 
+                onEachFeature={onEachFeature}
+              />
+            )}
+          </MapContainer>
+        )}
+        
+        {/* Fallback quando o mapa não está inicializado e não está carregando */}
+        {!mapInitialized && !loading && (
+          <div className="loading-error">
+            <p>Não foi possível carregar o mapa. Por favor, tente novamente.</p>
+            <button onClick={() => window.location.reload()} className="reload-button">
+              Recarregar
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
