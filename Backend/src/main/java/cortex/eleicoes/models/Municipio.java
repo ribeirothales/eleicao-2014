@@ -2,24 +2,34 @@ package cortex.eleicoes.models;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.util.List;
 import java.util.Map;
 
-@Document("municipios")
+@Document(collection = "municipios") // Assumindo nome da coleção
 public class Municipio {
 
     @Id
-    private String id; 
+    private String id; // Código IBGE
+
     private String nome;
+
+    @Indexed // Índice para busca por sigla do estado
     private String estadoSigla;
-    private String estadoCodigo;
+
+    @Indexed // Índice para busca por código do estado
+    private String estadoCodigo; // ID do estado (IBGE)
+
     private List<Voto> votos;
     private Map<String, Object> geoJson;
 
-    public Municipio() {
-    }
+    // Construtores, Getters e Setters (Omitidos para brevidade)
+    // Necessário adicionar construtores, getters e setters para o código compilar
 
+    public Municipio() {}
+
+    // Exemplo de construtor (adapte conforme necessidade, baseado no DataLoader)
     public Municipio(String id, String nome, String estadoSigla, String estadoCodigo, List<Voto> votos, Map<String, Object> geoJson) {
         this.id = id;
         this.nome = nome;
@@ -29,6 +39,7 @@ public class Municipio {
         this.geoJson = geoJson;
     }
 
+    // Getters e Setters
     public String getId() {
         return id;
     }
@@ -77,3 +88,4 @@ public class Municipio {
         this.geoJson = geoJson;
     }
 }
+

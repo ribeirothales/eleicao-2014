@@ -2,23 +2,30 @@ package cortex.eleicoes.models;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import java.util.List;
 import java.util.Map;
 
-@Document("estados")
+@Document(collection = "estados") // Assumindo nome da coleção
 public class Estado {
 
     @Id
-    private String id; 
+    private String id; // Pode ser o ID do IBGE
+
+    @Indexed(unique = true) // Índice único para busca rápida por sigla
     private String sigla;
+
     private String nome;
     private List<Voto> votos;
     private Map<String, Object> geoJson;
 
-    public Estado() {
-    }
+    // Construtores, Getters e Setters (Omitidos para brevidade)
+    // Necessário adicionar construtores, getters e setters para o código compilar
 
+    public Estado() {}
+
+    // Exemplo de construtor (adapte conforme necessidade)
     public Estado(String id, String sigla, String nome, List<Voto> votos, Map<String, Object> geoJson) {
         this.id = id;
         this.sigla = sigla;
@@ -27,6 +34,7 @@ public class Estado {
         this.geoJson = geoJson;
     }
 
+    // Getters e Setters
     public String getId() {
         return id;
     }
@@ -67,3 +75,4 @@ public class Estado {
         this.geoJson = geoJson;
     }
 }
+
