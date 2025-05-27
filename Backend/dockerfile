@@ -1,14 +1,10 @@
 FROM maven:3.9.4-eclipse-temurin-21 AS build
 WORKDIR /app
-
-# Copia só o pom.xml para cache das dependências
 COPY pom.xml .
-
-# Baixa dependências, cacheia essa camada
-RUN mvn dependency:go-offline -B
-
-# Agora copia o código fonte completo
 COPY src ./src
-
-# Builda pulando os testes
 RUN mvn clean package -DskipTests
+FROM eclipse-temurin:21-jdk-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
