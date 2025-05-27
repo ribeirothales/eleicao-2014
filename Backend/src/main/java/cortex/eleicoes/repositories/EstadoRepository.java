@@ -21,7 +21,6 @@ public interface EstadoRepository extends MongoRepository<Estado, String> {
     @Query("{ 'votos': { $elemMatch: { 'ano': ?0, 'cargo': ?1, 'turno': ?2 } } }") // Placeholder - ajuste a query!
     List<Estado> findByVotosAnoCargoTurno(String ano, String cargo, String turno);
 
-    // Se precisar apenas de alguns campos (projeção), pode fazer algo como:
     // @Query(value = "{ 'votos': { $elemMatch: { 'ano': ?0, 'cargo': ?1, 'turno': ?2 } } }", fields = "{ 'sigla': 1, 'nome': 1, 'id': 1 }")
     // List<EstadoProjection> findProjecaoByVotosAnoCargoTurno(String ano, String cargo, String turno);
     // (Onde EstadoProjection seria uma interface definindo os campos sigla, nome, id)
