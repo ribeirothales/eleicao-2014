@@ -238,6 +238,7 @@ const MapBrazil = () => {
           <div className="loading-overlay">
             <div className="loading-spinner"></div>
             <p className="loading-text">Carregando mapa...</p>
+            <p>Essa ação pode durar até 3 minutos</p>
           </div>
         )}
         
